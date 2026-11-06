@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<!-- saved from url=(0150)file:///C:/Users/E0911498/AppData/Local/Temp/%7B22705EA4-6BBB-4CD8-8A5D-E038868499B8%7D/%7BBBE7257E-7AA7-4727-9E73-6B08B7206CF9%7D/75CB3AB9%20(2).HTML -->
+<html lang="zh-Hant"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EATON 抽獎程式</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --accent: #22c55e;
+      --accent2: #3b82f6;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --danger: #ef4444;
+      --border: #374151;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: "Segoe UI", "Noto Sans TC", system-ui, -apple-system, sans-serif;
+      background: linear-gradient(120deg, #0b1020, #121e38 60%, #0b1020);
+      color: var(--text);
+    }
+    header {
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 14px;
+    }
+    /* --- LOGO 區塊 --- */
+    .brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(17, 24, 39, 0.35);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      backdrop-filter: blur(6px);
+    }
+    .brand img {
+      display: block;
+      max-height: 36px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 1px 1px rgba(0,0,0,0.35));
+    }
+    .brand .fallback {
+      display:none; /* 預設隱藏，LOGO 載入失敗時顯示 */
+      font-weight: 800; letter-spacing: 0.5px; color: #bcd3ff; font-size: 16px;
+    }
+    header h1 { margin: 0 0 4px; font-size: 24px; }
+    header p { margin: 0; color: var(--muted); font-size: 14px; }
+    .container {
+      max-width: 1080px; margin: 0 auto; padding: 20px;
+      display: grid; gap: 20px; grid-template-columns: 1.2fr 1fr;
+    }
+    .card {
+      background: rgba(17, 24, 39, 0.8);
+      border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+      backdrop-filter: blur(6px);
+    }
+    .card h2 { margin: 0 0 12px; font-size: 18px; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+    textarea, input[type="text"], input[type="number"] {
+      width: 100%; padding: 10px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: #0b1220; color: var(--text);
+      font-size: 14px;
+    }
+    textarea { min-height: 140px; resize: vertical; }
+    .row { display: flex; gap: 10px; align-items: center; }
+    .row > * { flex: 1; }
+    .small { font-size: 12px; color: var(--muted); }
+    .btn {
+      cursor: pointer; border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 14px; font-weight: 600; font-size: 14px;
+      background: #0b1220; color: var(--text);
+    }
+    .btn:hover { border-color: #526383; }
+    .btn-primary { background: linear-gradient(90deg, var(--accent), var(--accent2)); border: none; color: #041018; }
+    .btn-danger { background: var(--danger); border: none; color: white; }
+    .switch { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+    .switch input { transform: scale(1.2); }
+    .results { display: grid; gap: 10px; }
+    .result-item {
+      display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px;
+      background: rgba(8, 13, 24, 0.7); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 12px;
+    }
+    .result-item .prize { color: #a7f3d0; font-weight: 700; }
+    .result-item .winner { color: #93c5fd; font-weight: 600; }
+    .result-item .batch { color: var(--muted); text-align: right; }
+    .status { font-size: 13px; color: var(--muted); }
+    .pulse { animation: pulse 0.8s ease-in-out infinite; }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6); }
+      100% { box-shadow: 0 0 0 12px rgba(59, 130, 246, 0); }
+    }
+    footer { text-align: center; padding: 16px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+    .tag { display:inline-block; background:#0a1a2f; border:1px solid #1f2b3d; color:#bcd3ff; padding:4px 8px; border-radius:999px; font-size:12px; margin-right:6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <!-- LOGO 區塊：將 src 換成你的檔案路徑或 URL -->
+    <div class="brand" title="CI提案月月送">
+      <img id="eatonLogo" src="file:///C:/Users/E0911498/AppData/Local/Temp/%7B22705EA4-6BBB-4CD8-8A5D-E038868499B8%7D/%7BBBE7257E-7AA7-4727-9E73-6B08B7206CF9%7D/images/eaton-logo.svg" alt="EATON Logo" style="display: none;">
+      <span class="fallback" style="display: inline;">EATON</span>
+    </div>
+    <div>
+      <h1>CI提案月月送</h1>
+      <p>輸入參加者與獎品，設定抽出人數，系統會公平（可加權）隨機抽出並配對獎品。</p>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- 左側：設定 -->
+    <section class="card">
+      <h2>設定</h2>
+      <div class="field">
+        <label>參加者名單（每行一位；可貼姓名、員編、Email 等）</label>
+        <textarea id="participants" placeholder="例：\n王小明\n李小華\ntest@example.com\nA12345"></textarea>
+        <div class="small">系統會自動去重與移除空白行。</div>
+      </div>
+
+      <div class="field">
+        <label>獎品清單（每行：<code>獎品名稱, 數量[, 權重]</code>）</label>
+        <textarea id="prizes" placeholder="獎品:\n筆記本, 20, 20\n八字運動繩, 20, 20\n精裝筆記本, 15, 15\nEATON手機架, 15, 15\nEATON帽, 10, 10\nEATON小熊鑰匙圈, 10, 10\nEATON65W氮化鎵充電頭, 10, 10"></textarea>
+        <div class="small">
+          權重（可選）預設為 1，數值越大越容易被抽中。<br>
+          同獎品若有多個數量，會以相同權重分別加入獎池（逐一抽，不放回）。
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>抽出人數</label>
+          <input id="drawCount" type="number" min="1" value="3">
+        </div>
+        <div class="field">
+          <label>隨機種子（選填，用來重現結果）</label>
+          <input id="seed" type="text" placeholder="例如：event-2025-12">
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:8px;">
+        <label class="switch"><input id="animate" type="checkbox" checked="">啟用抽獎動畫</label>
+        <label class="switch"><input id="uniqueWinners" type="checkbox" checked="">避免重複中獎</label>
+        <label class="switch"><input id="appendMode" type="checkbox">追加抽（不清除之前結果）</label>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button class="btn btn-primary" id="drawBtn" type="button">開始抽獎</button>
+        <button class="btn" id="shuffleBtn" type="button">隨機洗牌（不抽）</button>
+        <button class="btn btn-danger" id="resetBtn" type="button">重置資料</button>
+      </div>
+
+      <div class="status" id="status" style="margin-top: 10px; color: var(--muted);">請輸入/調整資料後開始抽獎。</div>
+
+      <div class="small" style="margin-top:8px;">
+        <span class="tag">公平隨機</span>
+        <span class="tag">加權抽獎</span>
+        <span class="tag">Fisher–Yates</span>
+        <span class="tag">可重現（Seed）</span>
+        <span class="tag">CSV（UTF‑8 BOM）</span>
+      </div>
+    </section>
+
+    <!-- 右側：結果 -->
+    <section class="card">
+      <h2>結果</h2>
+      <div class="row" style="margin-bottom:8px;">
+        <button class="btn" id="exportBtn" type="button">匯出 CSV</button>
+        <button class="btn" id="copyBtn" type="button">複製結果</button>
+      </div>
+      <div id="results" class="results"></div>
+    </section>
+  </div>
+
+  <footer>
+    這個頁面不會上傳任何資料到網路，所有抽獎在你的瀏覽器本機執行。
+  </footer>
+
+  <script>
+    // 如果 LOGO 失敗，隱藏圖片並顯示備援文字
+    const logoImg = document.getElementById('eatonLogo');
+    const logoFallback = document.querySelector('.brand .fallback');
+    logoImg?.addEventListener('error', () => { logoImg.style.display = 'none'; if(logoFallback) logoFallback.style.display='inline'; });
+
+    // -------- 工具：簡易可重現隨機（Mulberry32）+ Hashed Seed --------
+    function hashStringToInt(str) {
+      // FNV-1a 32-bit
+      let h = 0x811c9dc5;
+      for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = (h >>> 0) * 0x01000193;
+      }
+      return h >>> 0;
+    }
+    function mulberry32(seed) {
+      let t = seed >>> 0;
+      return function() {
+        t += 0x6D2B79F5;
+        let r = Math.imul(t ^ (t >>> 15), 1 | t);
+        r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+        return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+    // 可建立不同用途的 RNG（同一 seed 文本 + salt 分流）
+    function createRNG(seedText, salt = '') {
+      if (!seedText) return Math.random;
+      const seed = hashStringToInt(seedText + '::' + salt);
+      return mulberry32(seed);
+    }
+
+    // -------- Fisher–Yates 洗牌（用於人選打亂） --------
+    function shuffle(arr, rng = Math.random) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    // -------- 解析欄位 --------
+    function parseParticipants(text) {
+      return [...new Set(
+        text.split(/\r?\n/)
+            .map(s => s.trim())
+            .filter(s => s.length > 0)
+      )];
+    }
+    // 解析獎品：支援「名稱, 數量[, 權重]」
+    function parsePrizes(text) {
+      const lines = text.split(/\r?\n/).map(s => s.trim()).filter(s => s.length > 0);
+      const bag = []; // 展開後的獎品單位：{ name, weight }
+      const issues = [];
+      for (const line of lines) {
+        const parts = line.split(',').map(s => s.trim());
+        if (parts.length < 2) {
+          issues.push(`格式錯誤：${line}（需為「獎品名稱, 數量[, 權重]」）`);
+          continue;
+        }
+        const [name, qtyStr, weightStr] = parts;
+        if (!name) { issues.push(`獎品名稱不可為空：${line}`); continue; }
+        const qty = Number(qtyStr);
+        if (!Number.isFinite(qty) || qty <= 0) { issues.push(`數量需為正整數：${line}`); continue; }
+        let weight = 1;
+        if (weightStr !== undefined && weightStr !== '') {
+          const w = Number(weightStr);
+          if (!Number.isFinite(w) || w <= 0) { issues.push(`權重需為正數：${line}`); continue; }
+          weight = w;
+        }
+        for (let i = 0; i < Math.floor(qty); i++) bag.push({ name, weight });
+      }
+      return { bag, issues };
+    }
+
+    // -------- 加權隨機抽取（不放回） --------
+    function weightedPickIndex(items, rng = Math.random) {
+      // items: [{name, weight}, ...]
+      let total = 0;
+      for (const it of items) {
+        const w = Number(it.weight);
+        total += (Number.isFinite(w) && w > 0) ? w : 0;
+      }
+      if (total <= 0) {
+        // 權重皆無效時，退回等機率
+        return Math.floor(rng() * items.length);
+      }
+      let r = rng() * total;
+      for (let i = 0; i < items.length; i++) {
+        const w = Number(items[i].weight);
+        r -= (Number.isFinite(w) && w > 0) ? w : 0;
+        if (r < 0) return i;
+      }
+      return items.length - 1; // 保底（避免浮點邊界）
+    }
+
+    // -------- UI 操作 --------
+    const el = (id) => document.getElementById(id);
+    const participantsEl = el('participants');
+    const prizesEl = el('prizes');
+    const drawCountEl = el('drawCount');
+    const seedEl = el('seed');
+    const animateEl = el('animate');
+    const uniqueWinnersEl = el('uniqueWinners');
+    const appendModeEl = el('appendMode');
+    const statusEl = el('status');
+    const resultsEl = el('results');
+    const drawBtn = el('drawBtn');
+    const shuffleBtn = el('shuffleBtn');
+    const resetBtn = el('resetBtn');
+    const exportBtn = el('exportBtn');
+    const copyBtn = el('copyBtn');
+
+    let globalWinners = []; // 累計的中獎紀錄：{ winner, prize, batch }
+    let batchCounter = 0;
+
+    function setStatus(msg, type='info') {
+      statusEl.textContent = msg;
+      statusEl.style.color = type === 'error' ? 'var(--danger)' : 'var(--muted)';
+    }
+
+    function renderResults() {
+      resultsEl.innerHTML = '';
+      if (globalWinners.length == 0) {
+        resultsEl.innerHTML = '<div class="small">尚無結果。按「開始抽獎」進行抽取。</div>';
+        return;
+      }
+      for (const item of globalWinners) {
+        const div = document.createElement('div');
+        div.className = 'result-item';
+        div.innerHTML = `
+          <div class="winner">${item.winner}</div>
+          <div class="prize">${item.prize ?? '未配對獎品'}</div>
+          <div class="batch">批次：${item.batch}</div>
+        `;
+        resultsEl.appendChild(div);
+      }
+    }
+
+    // ✅ CSV 匯出（UTF‑8 BOM + CRLF，避免 Excel 亂碼）
+    function exportCSV() {
+      const header = 'winner,prize,batch\r\n';
+      const rows = globalWinners.map(r => {
+        const w = '"' + String(r.winner).replace(/"/g,'""') + '"';
+        const p = r.prize ? '"' + String(r.prize).replace(/"/g,'""') + '"' : '';
+        return `${w},${p},${r.batch}`;
+      }).join('\r\n') + '\r\n';
+      const BOM = '\ufeff';
+      const csvText = BOM + header + rows;
+      const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `lottery_results_batch${batchCounter}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setStatus('CSV 已匯出（UTF‑8 with BOM），Excel 應可正確顯示中文。');
+    }
+
+    // 複製結果（Tab 分隔，貼到 Excel 會自動分欄）
+    function copyResultsToClipboard() {
+      const lines = globalWinners.map(r => {
+        const w = String(r.winner);
+        const p = r.prize ?? '未配對獎品';
+        const b = String(r.batch);
+        return `${w}\t${p}\t${b}`;
+      });
+      const text = lines.join('\r\n');
+      navigator.clipboard.writeText(text)
+        .then(() => setStatus('結果已複製（Tab 分隔），可直接貼到 Excel。'))
+        .catch(() => setStatus('複製失敗，可能因瀏覽器限制。', 'error'));
+    }
+
+    function animateButton(btn) {
+      btn.classList.add('pulse');
+      setTimeout(() => btn.classList.remove('pulse'), 1000);
+    }
+
+    // -------- 抽獎主流程（人選獨立 RNG + 加權獎池） --------
+    function draw() {
+      const participants = parseParticipants(participantsEl.value);
+      const { bag: prizeBagInit, issues } = parsePrizes(prizesEl.value);
+      const wanted = Math.max(1, Math.floor(Number(drawCountEl.value) || 1));
+      const seedText = seedEl.value.trim();
+      const rngPeople = createRNG(seedText, 'people');
+      const rngPrize = createRNG(seedText, 'prize');
+
+      // 驗證
+      if (participants.length === 0) { setStatus('參加者名單為空，請輸入至少一位。', 'error'); return; }
+      if (issues.length > 0) { setStatus('獎品清單有格式問題：\n' + issues.join('\n'), 'error'); return; }
+
+      // 決定可抽名單（避免重複中獎）
+      let eligible = participants.slice();
+      if (uniqueWinnersEl.checked && globalWinners.length > 0) {
+        const already = new Set(globalWinners.map(r => r.winner));
+        eligible = eligible.filter(p => !already.has(p));
+      }
+      if (eligible.length === 0) { setStatus('沒有可抽的參加者（可能因避免重複中獎而全部用盡）。', 'error'); return; }
+
+      // 人選洗牌 + 取樣
+      const shuffledPeople = shuffle(eligible, rngPeople);
+      const pickCount = Math.min(wanted, shuffledPeople.length);
+      const winners = shuffledPeople.slice(0, pickCount);
+
+      // 加權獎池（不放回抽取）
+      const prizeBag = prizeBagInit.slice(); // [{name, weight}, ...]
+      const assigned = [];
+      for (let i = 0; i < winners.length; i++) {
+        let prize = null;
+        if (prizeBag.length > 0) {
+          const idx = weightedPickIndex(prizeBag, rngPrize);
+          prize = prizeBag[idx].name;
+          prizeBag.splice(idx, 1); // 抽出後移除，避免重複
+        }
+        assigned.push({ winner: winners[i], prize });
+      }
+
+      batchCounter += 1;
+      const batch = batchCounter;
+      const records = assigned.map(a => ({ winner: a.winner, prize: a.prize, batch }));
+      if (!appendModeEl.checked) { globalWinners = records; } else { globalWinners = globalWinners.concat(records); }
+      renderResults();
+
+      const prizeInfo = prizeBagInit.length >= winners.length
+        ? `已為 ${winners.length} 位逐一加權隨機配對獎品。`
+        : `已抽出 ${winners.length} 位，其中 ${prizeBagInit.length} 位配到獎品；其餘顯示「未配對獎品」。`;
+      setStatus(`批次 ${batch} 完成。${prizeInfo}（參加者共 ${participants.length} 位${uniqueWinnersEl.checked ? '，避免重複中獎' : ''}）`);
+      if (animateEl.checked) animateButton(drawBtn);
+    }
+
+    function shuffleOnly() {
+      const participants = parseParticipants(participantsEl.value);
+      if (participants.length === 0) { setStatus('參加者名單為空，無法洗牌。', 'error'); return; }
+      const seedText = seedEl.value.trim();
+      const rng = createRNG(seedText, 'shuffle-only');
+      const shuffled = shuffle(participants, rng);
+      participantsEl.value = shuffled.join('\n');
+      setStatus('已隨機打亂參加者名單。');
+      animateButton(shuffleBtn);
+    }
+
+    function resetAll() {
+      participantsEl.value = '';
+      prizesEl.value = '';
+      drawCountEl.value = 3;
+      seedEl.value = '';
+      animateEl.checked = true;
+      uniqueWinnersEl.checked = true;
+      appendModeEl.checked = false;
+      globalWinners = [];
+      batchCounter = 0;
+      renderResults();
+      setStatus('已重置。');
+      animateButton(resetBtn);
+    }
+
+    drawBtn.addEventListener('click', draw);
+    shuffleBtn.addEventListener('click', shuffleOnly);
+    resetBtn.addEventListener('click', resetAll);
+    exportBtn.addEventListener('click', exportCSV);
+    copyBtn.addEventListener('click', copyResultsToClipboard);
+
+    // 預設示例資料
+    const defaultParticipants = [
+      'Amelia Hall','Ryan Nelson','Olivia Wright','Ryan Allen','Leo Clark',
+      'Ethan Baker','Emma Young','Chloe Hall','Owen Johnson','Harper Taylor',
+      'Hannah Carter','Isabella Allen','Zoe Baker','Amelia Adams','Mason King',
+      'Caleb Nelson','James Collins','Nathan Carter','Isabella King','Lucas Nelson',
+      'Amelia Nelson','Caleb Allen','Grace Lewis','Emma Evans','Grace Mitchell',
+      'Mason Parker',
+    ];
+    const defaultPrizes = [
+      '筆記本, 20, 20',
+      '八字運動繩, 20, 20',
+      '精裝筆記本, 15, 15',
+      'EATON手機架, 15, 15',
+      'EATON帽, 10, 10',
+      'EATON小熊鑰匙圈, 10, 10',
+      'EATON65W氮化鎵充電頭, 10, 10'
+    ];
+    el('participants').value = defaultParticipants.join('\n');
+    el('prizes').value = defaultPrizes.join('\n');
+    setStatus('請輸入/調整資料後開始抽獎。');
+  </script>
+
+
+</body></html>
