@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Demo 目錄</title>
+    <style>
+        :root {
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --accent: #22c55e;
+            --border: #374151;
+            --card: #111827;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", "Noto Sans TC", system-ui, -apple-system, sans-serif;
+            background: linear-gradient(120deg, #0b1020, #121e38 60%, #0b1020);
+            color: var(--text);
+        }
+        main {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 48px 20px;
+        }
+        h1 { margin: 0 0 24px; }
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        li + li { margin-top: 12px; }
+        a {
+            display: block;
+            padding: 16px 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--text);
+            text-decoration: none;
+            transition: border-color 0.2s;
+        }
+        a:hover { border-color: var(--accent); }
+        a small {
+            display: block;
+            margin-top: 4px;
+            color: var(--muted);
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Demo 目錄</h1>
+        <ul>
+            <li>
+                <a href="EATON%20%E6%8A%BD%E7%8D%8E%E7%A8%8B%E5%BC%8F.html">
+                    EATON 抽獎程式
+                    <small>EATON 抽獎程式.html</small>
+                </a>
+            </li>
+        </ul>
+    </main>
+</body>
+</html>
